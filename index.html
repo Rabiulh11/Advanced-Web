@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<!-- Head section--> 
+<head> 
+    <!--
+        The idea is to use chucknorris.io to get a random joke and display it on the page.
+        list all categories and have a free text search.
+    -->
+    <title>Chuck Norris Joke</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <!-- Font awesome -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://use.fontawesome.com/6a71565c22.js"></script>
+
+    <!--Scripts file -->
+    <script src="scripts.js"></script>
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="styles.css">
+    
+    
+
+
+</head>
+<!-- End of head section -->
+<!-- Body section -->
+
+
+<body>
+    <header>
+        <h1>Chuck Norris Joke</h1>
+    </header>
+    <article>
+       
+        <!-- Card -->
+        <!-- Random Jokes-->
+        <section class="card">
+            <!-- Card content -->
+            <section class="card-title">
+                <h4 class="card-title">Random Jokes</h4>
+            </section>
+            <section class="card-body">
+                <!-- Text -->
+                <p class="card-text">Want to hear a joke?</p>
+                <button type="button" class="btn btn-primary" id="getJoke">
+                    Get Joke
+                    <i class="fa fa-smile-o" aria-hidden="true"></i>
+                </button>
+                <backquote class="card-footer text-muted">
+                    <p id="joke"></p>
+                </backquote>
+            </section>
+        </section>
+        <hr>
+        <!-- Card -->
+        <!-- Joke Search -->
+        <section class="card">
+            
+            <!-- Card content -->
+            <section class="card-title">
+                <h4 class="card-title">Search Jokes</h4>
+            </section>
+            <section class="card-body">
+                <!-- Text -->
+                <p class="card-text">Want to hear a joke?</p>
+                <input
+                    class="form-control"
+                    type="text" 
+                    id="search" 
+                    placeholder="Search for a joke"
+
+                >
+                <br>
+                <!-- Button -->
+                <button type="button" class="btn btn-primary" id="getSearch">
+                    Get Joke
+                    <i class="fa fa-search" aria-hidden="true"></i>
+                </button>
+                <!-- Text -->
+                <backquote class="card-footer text-muted">
+                    <p id="searchJoke"></p>
+                </backquote>
+            </section>
+        </section>
+        <hr>
+        <!-- Card -->
+        <!-- Joke Categories -->
+        <section class="card">
+            
+            <!-- Card content -->
+            <section class="card-title text-center">
+                <h4 class="card-title">Categories</h4>
+            </section>
+            <section class="card-body">
+                <!-- Text -->
+                <p class="card-text">Want to hear a joke?</p>
+                <!-- Pull categories using the API -->
+                <!-- Select category -->
+                <select
+                 id="categories"
+                 class="form-control"
+                >
+                    <option value="select a category">Select a category</option>
+                </select>
+                    
+                <backquote class="card-footer text-muted">
+                    <p id="categoryJoke"></p>
+                </backquote>
+            </section>
+        </section>
+    </article>
+    <!-- Footer -->
+    <footer>
+        <p>
+            Created by <a href="#">Rabiul Hasan</a> <i class="fa fa-smile-o" aria-hidden="true"></i>
+        </p>
+    </footer>
+    <!-- End of footer -->
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+</body>
+</html>
+
