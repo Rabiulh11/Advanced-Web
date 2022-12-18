@@ -1,3 +1,12 @@
+// check if browser supports service worker and register it
+const registerServiceWorker = async () => {
+    if ("serviceWorker" in navigator) {
+      await navigator.serviceWorker.register("sw.js");
+      
+    }
+  };
+  
+registerServiceWorker();
 
 //declare the urls
 let random_url, search_url, categories_url, categories_search_url;
@@ -10,9 +19,21 @@ function send_request(url, callback_func) {
 
     // Define a callback function to manipulate data
     xhr.onreadystatechange = function() {
-        callback_func(this);
+        if (this.readyState == 4 && this.status == 200) {
+            callback_func(this);
+        }
     };
+    
+    $("#getJoke").click(function () {
+        $("#joke").html(JSON.parse(xhr.responseText).value);
+        
+    });
 
+    $("#getSearch").click(function () {
+        const search_jokes = JSON.parse(xhr.responseText).result[5]["value"]
+        $("#searchJoke").html(search_jokes);
+        return false;
+    });
     // Define request
     xhr.open("GET", url, true);
 
@@ -28,15 +49,17 @@ function get_joke(xhr) {
         $("#joke").html(JSON.parse(xhr.responseText).value);
         
     });
-}
+    return false;
+};
 
 //Define random joke callback function
 function search_joke(xhr) {
     $("#getSearch").click(function () {
-        $("#searchJoke").html(JSON.parse(xhr.responseText).value);
-        
+        const search_jokes = JSON.parse(xhr.responseText).result[5]["value"]
+        $("#searchJoke").html(search_jokes);
+        return false;
     });
-}
+};
 
 // Define category call back function
 function set_categories(xhr) {
@@ -52,22 +75,17 @@ function choose_category(xhr) {
     //Set the category fields with category search result
     $("#categories").change(function () {
         $("#categoryJoke").html(JSON.parse(xhr.responseText).value);
-
+        return false
     });
 };
 
 //Add search terms if found in input field
 function jokeTerm() {
-    if ($("#search").val()) {
-        search_url = "https://api.chucknorris.io/jokes/search?query=" + $("#search").val();
-    }
+    $("#search").val() ? search_url = "https://api.chucknorris.io/jokes/search?query=" + $("#search").val() : {}
 }
 
 function categoryTerm (cat_term) {
-    if (cat_term) {
-        categories_search_url = "https://api.chucknorris.io/jokes/random?category=" + cat_term;
-
-    }
+    cat_term ? categories_search_url = "https://api.chucknorris.io/jokes/random?category=" + cat_term : {}
     
 }
 
