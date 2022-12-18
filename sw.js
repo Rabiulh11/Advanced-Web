@@ -1,3 +1,11 @@
+// install necessary apps and resources
+const ASSETS = [
+    "https://api.chucknorris.io/jokes/random",
+    "https://api.chucknorris.io/jokes/search?query=animal", 
+    "https://api.chucknorris.io/jokes/categories", 
+    "https://api.chucknorris.io/jokes/random?category=animal",
+    "/"
+];
 
 let cache_name = "chuck_norris"
 // add event listener for the service worker
@@ -6,21 +14,18 @@ let cache_name = "chuck_norris"
 self.addEventListener("install", event => {
     event.waitUntil(
         caches.open(cache_name).then(cache => {
-                return cache.addAll(assets);
-            }).catch(err => console.log(err))
+            caches.open(cache_name);
+            return cache.addAll(ASSETS);
+            })
     );
 });
 
-self.addEventListener("fetch", event => {
-    if (event.request.url === "https://api.chucknorris.io/jokes/") {
-        // or whatever your app's URL is
-        event.respondWith(
-            fetch(event.request).catch(err =>
-                self.cache.open(cache_name).then(cache => cache.match("/index.html"))
-            )
-        );
-    } else {
-        event.respondWith(fetch(event.request).catch(err => caches.match(event.request).then(response => response)));
-        }
-    }
-);
+self.addEventListener('fetch', (event) => {
+    event.respondWith((async () => {
+      if (await caches.match(event.request)) { return await caches.match(event.request); }
+      const response = await fetch(event.request);
+      const cache = await caches.open(cache_name);
+      cache.put(event.request, response.clone());
+      return response;
+    })());
+  });
