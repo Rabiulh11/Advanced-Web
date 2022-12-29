@@ -8,93 +8,82 @@ const registerServiceWorker = async () => {
   
 registerServiceWorker();
 
-//declare the urls
-let random_url, search_url, categories_url, categories_search_url;
-[random_url, search_url, categories_url, categories_search_url] = ["https://api.chucknorris.io/jokes/random", "https://api.chucknorris.io/jokes/search?query=animal", "https://api.chucknorris.io/jokes/categories", "https://api.chucknorris.io/jokes/random?category=animal"]
-
-// define function to make the api calls
-function send_request(url, callback_func) {
-    //Create an XMLHttpRequest object
-    xhr = new XMLHttpRequest();
-
-    // Define a callback function to manipulate data
-    xhr.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            callback_func(this);
+// define function to get a joke from API
+function apiRequest(usr_link, usr_content) {
+    $.ajax({
+        // The URL to the API.
+        url: usr_link, 
+        // The HTTP Method
+        type: "GET",
+        // The type of data you expect back from the server
+        dataType: "json",
+        // On success
+        success: function (data) {
+            // Set the HTML content with the data that came from the server
+            if(usr_content === "#searchJoke") {
+                $(usr_content).html(data.result[0].value);
+            }else {
+                $(usr_content).html(data.value);
+            }
         }
-    };
-    
-    $("#getJoke").click(function () {
-        $("#joke").html(JSON.parse(xhr.responseText).value);
+    });
+}
+
+// define function to get categories from API and set category options 
+function setCategories(usr_link, usr_element) {
+    $.ajax({
+        url: usr_link, // The URL to the API. You can get this in the API page of the API you intend to consume
+        type: "GET",
+        dataType: "json",
+        // On success
+        success: function (data) {
+            //Loop through the categories
+            for (var i = 0; i < data.length; i++) { 
+                //Append the categories to the select element
+                $(usr_element).append("<option value='" + data[i] + "'>" + data[i] + "</option>");
+            }
+        }
+    });
+}
+
+// define a function that encapsulates the logic for making an Ajax request.
+function ajaxCall() { 
+    // when the document is ready
+    // Set on click button listeners
+    $(document).ready(function () {
         
-    });
+        // on "Get Joke" button click
+        $("#getJoke").click(function () {
+            // Get a random joke from the API
+            let usr_link = "https://api.chucknorris.io/jokes/random";
+            let usr_content = "#joke";
+            apiRequest(usr_link, usr_content);
+        });
 
-    $("#getSearch").click(function () {
-        const search_jokes = JSON.parse(xhr.responseText).result[5]["value"]
-        $("#searchJoke").html(search_jokes);
-        return false;
-    });
-    // Define request
-    xhr.open("GET", url, true);
-
-    //Send request
-    xhr.send();
-
-};
-
-// define call back functions for DOM manipulation
-function get_joke(xhr) {
-    //Define random joke callback function
-    $("#getJoke").click(function () {
-        $("#joke").html(JSON.parse(xhr.responseText).value);
+        // on "Search" button click
+        $("#getSearch").click(function () {
+            // get user input
+            var search = $("#search").val();
+            //Search for a joke with the search term
+            let usr_link = "https://api.chucknorris.io/jokes/search?query=" + search;
+            let usr_content = "#searchJoke";
+            apiRequest(usr_link, usr_content);
+        });
         
+        // Set the category options
+        $(document).ready(function () {
+            let usr_link = "https://api.chucknorris.io/jokes/categories";
+            let usr_element = "#categories";
+            setCategories(usr_link, usr_element);
+        });
+
+        // Display joke based on category change
+        $("#categories").change(function () {
+            // get the chosen category
+            var category = $("#categories").val();
+            let usr_link = "https://api.chucknorris.io/jokes/random?category=" + category;
+            let usr_content = "#categoryJoke";
+            apiRequest(usr_link, usr_content);
+        });
     });
-    return false;
-};
-
-//Define random joke callback function
-function search_joke(xhr) {
-    $("#getSearch").click(function () {
-        const search_jokes = JSON.parse(xhr.responseText).result[5]["value"]
-        $("#searchJoke").html(search_jokes);
-        return false;
-    });
-};
-
-// Define category call back function
-function set_categories(xhr) {
-    var data = xhr.responseText.replace(/\[|\]/g,"").split(',');
-    // Loop through the categories and append the categories to the select element
-    for (var i = 0; i < data.length; i++) {
-        $("#categories").append("<option value=" + data[i] + ">" + data[i] + "</option>");
-
-    };
 }
-
-function choose_category(xhr) {
-    //Set the category fields with category search result
-    $("#categories").change(function () {
-        $("#categoryJoke").html(JSON.parse(xhr.responseText).value);
-        return false
-    });
-};
-
-//Add search terms if found in input field
-function jokeTerm() {
-    $("#search").val() ? search_url = "https://api.chucknorris.io/jokes/search?query=" + $("#search").val() : {}
-}
-
-function categoryTerm (cat_term) {
-    cat_term ? categories_search_url = "https://api.chucknorris.io/jokes/random?category=" + cat_term : {}
-    
-}
-
-
-// Send the Api requests via the call back functions
-send_request(random_url, get_joke);
-
-send_request(search_url, search_joke);
-
-send_request(categories_url, set_categories);
-
-send_request(categories_search_url, choose_category);
