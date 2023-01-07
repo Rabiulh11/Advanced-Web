@@ -8,82 +8,199 @@ const registerServiceWorker = async () => {
   
 registerServiceWorker();
 
-// define function to get a joke from API
-function apiRequest(usr_link, usr_content) {
-    $.ajax({
-        // The URL to the API.
-        url: usr_link, 
-        // The HTTP Method
-        type: "GET",
-        // The type of data you expect back from the server
-        dataType: "json",
-        // On success
-        success: function (data) {
-            // Set the HTML content with the data that came from the server
-            if(usr_content === "#searchJoke") {
-                $(usr_content).html(data.result[0].value);
-            }else {
-                $(usr_content).html(data.value);
+//declare the urls
+let random_url, search_url, categories_url, categories_search_url;
+[random_url, categories_url, search_url, categories_search_url] = ["https://api.chucknorris.io/jokes/random", "https://api.chucknorris.io/jokes/categories", "https://api.chucknorris.io/jokes/search?query=animal", "https://api.chucknorris.io/jokes/random?category=animal"]
+
+// define function to make the api calls
+function send_request(url, callback_func) {
+    try {
+        //Create an XMLHttpRequest object
+        xhr = new XMLHttpRequest();
+    
+        xhr.addEventListener("loadstart", function() {
+            // Show the loading bar
+            switch (url){
+                case random_url:
+                    document.getElementById("random_loadingbar").style.width = "100%";
+                break;
+                case search_url:
+                    document.getElementById("search_loadingbar").style.width = "100%";
+                break;
+                case categories_search_url:
+                    document.getElementById("cat_loadingbar").style.width = "100%";
+                break;
             }
+          });
+          
+          xhr.addEventListener("progress", function(event) {
+            // Update the loading bar with the current progress
+            var progress = event.loaded / event.total * 100;
+            switch (url){
+                case random_url:
+                    document.getElementById("random_loadingbar").style.width = progress + "%";
+                break;
+                case search_url:
+                    document.getElementById("search_loadingbar").style.width = progress + "%";
+                break;
+                case categories_search_url:
+                    document.getElementById("cat_loadingbar").style.width = progress + "%";
+                break;
+            }
+          });
+          
+          xhr.addEventListener("loadend", function() {
+            // Hide the loading bar
+            switch (url){
+                case random_url:
+                    document.getElementById("random_loadingbar").style.width = "100%";
+                break;
+                case search_url:
+                    document.getElementById("search_loadingbar").style.width = "100%";
+                break;
+                case categories_search_url:
+                    document.getElementById("cat_loadingbar").style.width = "100%";
+                break;
+            }
+          });
+    
+        // Define a callback function to manipulate data
+        xhr.onload = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                callback_func(this);
+            }
+        };
+        // wait for response
+        // Make an Ajax request using the XMLHttpRequest object
+		
+		
+		// base function for triggering the api calls
+function ApiCallMethod(url,type, parameters, _id) {
+    $.ajax({
+        type: type,
+        url: url,
+        data: JSON.stringify(parameters),
+        contentType: 'application/json;',
+        dataType: 'json',
+        success: function (data) {
+            if(_id =="#joke" || _id=="#categoryJoke"){
+            $(_id).html(data.value); // Set the HTML content with the data fetched from the server
+            } else if(_id=="#searchJoke"){
+            $(_id).html(data.result[0].value);
+            }
+        },
+        error: function() {
+            console.log('error');
         }
     });
 }
 
-// define function to get categories from API and set category options 
-function setCategories(usr_link, usr_element) {
-    $.ajax({
-        url: usr_link, // The URL to the API. You can get this in the API page of the API you intend to consume
-        type: "GET",
-        dataType: "json",
-        // On success
-        success: function (data) {
-            //Loop through the categories
-            for (var i = 0; i < data.length; i++) { 
-                //Append the categories to the select element
-                $(usr_element).append("<option value='" + data[i] + "'>" + data[i] + "</option>");
+
+	
+	// function preloads categories in a drop down menu
+function preloadCategories(){
+    $(document).ready(function() {
+        $.ajax({
+            url: "https://api.chucknorris.io/jokes/categories",
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+                for (var i = 0; i < data.length; i++) { //Loop through the categories
+                    $("#categories").append("<option value='" + data[i] + "'>" + data[i] + "</option>"); 
+                }
             }
-        }
+        });
     });
+
 }
 
+	
+		
+		
+        // Define request
+        xhr.open("GET", url, true);
+        //Send request
+        xhr.send();
+    }
+    catch(error){
+        // Handle error
+        console.error(error);
+    }
+};
+
+// define call back functions for DOM manipulation
+function get_joke(xhr) {
+    //Define random joke callback function
+    if(xhr.status === 200) {
+        const obj = JSON.parse(xhr.responseText);
+        $("#joke").html(obj.value);
+        return false;
+    } else {
+        $("#joke").html("ERROR");
+    }
+};
+
+//Define random joke callback function
+function search_joke(xhr) {
+    if(xhr.status === 200) {
+        const search_jokes = JSON.parse(xhr.responseText).result[0]["value"]
+        $("#searchJoke").html(search_jokes);
+        return false;
+    } else {
+        $("#joke").html("ERROR");
+    }
+};
+
+// Define category call back function
+function set_categories(xhr) {
+    var data = xhr.responseText.replace(/\[|\]/g,"").split(',');
+    // Loop through the categories and append the categories to the select element
+    for (var i = 0; i < data.length; i++) {
+        $("#categories").append("<option value=" + data[i] + ">" + data[i] + "</option>");
+
+    };
+}
+
+function choose_category(xhr) {
+    //Set the category fields with category search result
+    if(xhr.status === 200) {
+        const obj = JSON.parse(xhr.responseText);
+        $("#categoryJoke").html(obj.value);
+        return false
+    } else {
+        $("#joke").html("ERROR");
+    }
+};
+
+//Add search terms if found in input field
+function jokeTerm() {
+    $("#search").val() ? search_url = "https://api.chucknorris.io/jokes/search?query=" + $("#search").val() : {}
+}
+
+// add joke category term if changed
+function categoryTerm () {
+    $("#categories").val() ? categories_search_url = "https://api.chucknorris.io/jokes/random?category=" + $("#categories").val() : {}
+    
+}
+// set category options
+send_request(categories_url, set_categories);
 // define a function that encapsulates the logic for making an Ajax request.
 function ajaxCall() { 
-    // when the document is ready
-    // Set on click button listeners
-    $(document).ready(function () {
-        
-        // on "Get Joke" button click
+    //When the document is ready 
+    $(document).ready(function () { 
+        // Send the Api requests via the call back functions
         $("#getJoke").click(function () {
-            // Get a random joke from the API
-            let usr_link = "https://api.chucknorris.io/jokes/random";
-            let usr_content = "#joke";
-            apiRequest(usr_link, usr_content);
+            send_request(random_url, get_joke);
         });
 
-        // on "Search" button click
         $("#getSearch").click(function () {
-            // get user input
-            var search = $("#search").val();
-            //Search for a joke with the search term
-            let usr_link = "https://api.chucknorris.io/jokes/search?query=" + search;
-            let usr_content = "#searchJoke";
-            apiRequest(usr_link, usr_content);
-        });
-        
-        // Set the category options
-        $(document).ready(function () {
-            let usr_link = "https://api.chucknorris.io/jokes/categories";
-            let usr_element = "#categories";
-            setCategories(usr_link, usr_element);
+            jokeTerm();
+            send_request(search_url, search_joke);
         });
 
-        // Display joke based on category change
         $("#categories").change(function () {
-            // get the chosen category
-            var category = $("#categories").val();
-            let usr_link = "https://api.chucknorris.io/jokes/random?category=" + category;
-            let usr_content = "#categoryJoke";
-            apiRequest(usr_link, usr_content);
+            categoryTerm ();
+            send_request(categories_search_url, choose_category);
         });
     });
 }

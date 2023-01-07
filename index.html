@@ -1,12 +1,13 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
     <!--
     The idea is to use chucknorris.io to get a random joke and display it on the page.
     list all categories and have a free text search
--->
-    <title>Chuck Norris Joke</title>
+    -->
+    <title>Chuck Norris Jokes</title>
+
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
@@ -15,9 +16,6 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
-    <!-- Font awesome -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <script src="https://use.fontawesome.com/6a71565c22.js"></script>
 
     <!--Jquery script to call ajax-->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -25,96 +23,76 @@
     <!--Scripts file -->
     <script src="scripts.js"></script>
     <script src="sw.js"></script>
-    <script src="app.js"></script>
 
-
- 
     <link rel="stylesheet" href="styles.css">
 
-
-
-
 </head>
-
-</html>
 
 <body>
 
 <section class="polaroid">
-  <img src="images/chuck_norris.webp" alt="5 Terre" style="width:100%">
-  <section class="container">
-  <!--<p>Chuck Norris</p>  -->
-  </section>
+  <img src="images/chuck_norris.jpg" alt="picture of Chuck Norris" style="width:100%">
+  <h6>Chuck Norris</h6>
 </section>
 
-    <header>
-        <h1>Chuck Norris Joke</h1>
-    </header>
+<header>
+    <h1>Chuck Norris Joke</h1>
+</header>
     <main>
         <article>
-
+            <h6 class="card-title">Ready to Explore?</h6>
             <!-- Random jokes Card -->
             <section class="card">
-
-                <!-- Card content -->
-                <section class="card-title">
-                    <h4 class="card-title">Random Jokes</h4>
-                </section>
+                <h2 class="card-title">Random Jokes</h2>
                 <section class="card-body">
                     <!-- Text -->
-                    <p class="card-text">Want to hear a joke?</p>
-                    <button type="button" class="btn btn-primary" id="getJoke">
+                    <h4 class="card-text">Want to hear a joke?</h4>
+                    <button type="button" class="btn btn-primary" id="getJoke" onclick="ajaxCall()">
                         Get Joke
                         <i class="fa fa-smile-o" aria-hidden="true"></i>
                     </button>
-                    <backquote class="card-footer text-muted">
-                        <p id="joke"></p>
-                    </backquote>
+                    <p id="joke"></p>
+                    <label id="random_loadingbar"></label>
                 </section>
             </section>
             <hr>
             <!-- Joke search Card -->
             <section class="card">
-
-                <!-- Card content -->
-                <section class="card-title">
-                    <h4 class="card-title">Search Jokes</h4>
-                </section>
+                <h2 class="card-title">Search Jokes</h2>
                 <section class="card-body">
                     <!-- Text -->
-                    <p class="card-text">Want to hear a joke?</p>
+                    <h4 class="card-text">Want to hear a joke?</h4>
                     <input class="form-control" type="text" id="search" placeholder="Search for a joke">
                     <br>
                     <!-- Button to activate the event listener, search joke -->
-                    <button type="button" class="btn btn-primary" id="getSearch">
+                    <button type="button" class="btn btn-primary" id="getSearch" onclick="ajaxCall()">
                         Get Joke
                         <!-- <i class="fa fa-search" aria-hidden="true"></i> -->
                     </button>
-                    <backquote class="card-footer text-muted">
+                    <blockquote class="card-footer text-muted">
                         <p id="searchJoke"></p>
-                    </backquote>
+                    </blockquote>
+                    <label id="search_loadingbar"></label>
                 </section>
             </section>
             <hr>
             <!-- Card categories -->
             <section class="card">
-
-                <!-- Card content -->
-                <section class="card-title text-center">
-                    <h4 class="card-title">Categories</h4>
-                </section>
+                <h2 class="card-title">Categories</h2>
+                
                 <section class="card-body">
                     <!-- Text -->
-                    <p class="card-text">Want to hear a joke?</p>
+                    <h4 class="card-text">Want to hear a joke?</h4>
                     <!-- Pull categories using the API -->
                     <!-- Category Selection -->
-                    <select id="categories" class="form-control">
+                    <select id="categories" class="form-control" onchange="ajaxCall()">
                         <option value="select a category">Select a category</option>
                     </select>
                     <!-- Category joke section where the joke will be displayed -->
-                    <backquote class="card-footer text-muted">
+                    <blockquote class="card-footer text-muted">
                         <p id="categoryJoke"></p>
-                    </backquote>
+                    </blockquote>
+                    <label id="cat_loadingbar"></label>
                 </section>
             </section>
         </article>
@@ -122,13 +100,9 @@
     <!--Footer section-->
     <footer>
         <p>
-            Created by <a href="#">Rabiul Hasan</a> <i class="fa fa-smile-o" aria-hidden="true"></i> <time datetime="2022-11-01">December 2022</time>
+            Created by <a href="#">Rabiul Hasan</a> <i class="fa fa-smile-o" aria-hidden="true"></i> <time datetime="2023-01-07">Januray</time>
         </p>
     </footer>
-    <!--Call function to process API requests-->
-    <script>
-        ajaxCall()
-    </script>
 </body>
 
 </html>
